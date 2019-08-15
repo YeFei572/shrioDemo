@@ -2,13 +2,14 @@ package com.shirodemo.demo0808.rest;
 
 import com.github.pagehelper.PageInfo;
 import com.shirodemo.demo0808.dto.request.LoginReq;
+import com.shirodemo.demo0808.dto.request.UserReq;
 import com.shirodemo.demo0808.entity.AdminAccount;
-import com.shirodemo.demo0808.entity.User;
 import com.shirodemo.demo0808.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,10 +23,11 @@ public class HomeCtrl {
     @Autowired
     private UserService userService;
 
+    @Cacheable(value = "adminAccount")
     @GetMapping(
             value = "/login"
     )
-    public PageInfo<AdminAccount> defaultLogin(@RequestParam("p") int page, @RequestParam("s") int size) {
+    public PageInfo<AdminAccount> defaultLogin(@RequestParam("page") int page, @RequestParam("size") int size) {
         return userService.selectByUserId("1", page, size);
     }
 
@@ -60,5 +62,16 @@ public class HomeCtrl {
             token.clear();
             return "登录失败！";
         }
+    }
+
+    @PostMapping(
+            value = "/good/add",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public void addUser(
+            @RequestBody UserReq req
+    ) {
+        userService.addUser(req.getUsername(), req.getPassword());
+//        userService.addUser("123", "432");
     }
 }

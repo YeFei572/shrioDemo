@@ -15,4 +15,6 @@ public interface UserService {
 
     PageInfo<AdminAccount> selectByUserId(String id, int page, int size);
 
+    void addUser(String username, String password);
+
 }
